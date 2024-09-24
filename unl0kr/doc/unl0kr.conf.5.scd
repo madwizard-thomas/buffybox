@@ -17,8 +17,8 @@ one option/value pair per line:
 On launch, UNL0KR searches for configuration files in various locations and
 successively merges all files together into a single configuration. Files are searched
 for and, if found, merged in the following order:
-	- /usr/share/unl0kr.conf
-	- /usr/share/unl0kr.conf.d/ (alphabetically)
+	- /usr/share/unl0kr/unl0kr.conf
+	- /usr/share/unl0kr/unl0kr.conf.d/ (alphabetically)
 	- /etc/unl0kr.conf
 	- /etc/unl0kr.conf.d/ (alphabetically)
 	- Override files (in supplied order)

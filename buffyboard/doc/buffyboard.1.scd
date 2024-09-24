@@ -27,8 +27,8 @@ result.
 *-C, --config-override*
 	Path to a config override file. Can be supplied multiple times. Config
 	files are merged in the following order:
-		- /usr/share/buffyboard.conf
-		- /usr/share/buffyboard.conf.d/\* (alphabetically)
+		- /usr/share/buffyboard/buffyboard.conf
+		- /usr/share/buffyboard/buffyboard.conf.d/\* (alphabetically)
 		- /etc/buffyboard.conf
 		- /etc/buffyboard.conf.d/\* (alphabetically)
 		- Override files (in supplied order)

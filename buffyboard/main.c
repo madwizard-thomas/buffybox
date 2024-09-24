@@ -188,8 +188,8 @@ int main(int argc, char *argv[]) {
 
     /* Parse config files */
     bb_config_init_opts(&conf_opts);
-    bb_config_parse_file("/usr/share/buffyboard.conf", &conf_opts);
-    bb_config_parse_directory("/usr/share/buffyboard.conf.d", &conf_opts);
+    bb_config_parse_file("/usr/share/buffyboard/buffyboard.conf", &conf_opts);
+    bb_config_parse_directory("/usr/share/buffyboard/buffyboard.conf.d", &conf_opts);
     bb_config_parse_file("/etc/buffyboard.conf", &conf_opts);
     bb_config_parse_directory("/etc/buffyboard.conf.d", &conf_opts);
     bb_config_parse_files(cli_opts.config_files, cli_opts.num_config_files, &conf_opts);
