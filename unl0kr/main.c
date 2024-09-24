@@ -381,8 +381,8 @@ int main(int argc, char *argv[]) {
 
     /* Parse config files */
     ul_config_init_opts(&conf_opts);
-    ul_config_parse_file("/usr/share/unl0kr.conf", &conf_opts);
-    ul_config_parse_directory("/usr/share/unl0kr.conf.d", &conf_opts);
+    ul_config_parse_file("/usr/share/unl0kr/unl0kr.conf", &conf_opts);
+    ul_config_parse_directory("/usr/share/unl0kr/unl0kr.conf.d", &conf_opts);
     ul_config_parse_file("/etc/unl0kr.conf", &conf_opts);
     ul_config_parse_directory("/etc/unl0kr.conf.d", &conf_opts);
     ul_config_parse_files(cli_opts.config_files, cli_opts.num_config_files, &conf_opts);

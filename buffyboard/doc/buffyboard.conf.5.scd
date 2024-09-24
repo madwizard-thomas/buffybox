@@ -17,8 +17,8 @@ one option/value pair per line:
 On launch, BUFFYBOARD searches for configuration files in various locations and
 successively merges all files together into a single configuration. Files are searched
 for and, if found, merged in the following order:
-	- /usr/share/buffyboard.conf
-	- /usr/share/buffyboard.conf.d/ (alphabetically)
+	- /usr/share/buffyboard/buffyboard.conf
+	- /usr/share/buffyboard/buffyboard.conf.d/ (alphabetically)
 	- /etc/buffyboard.conf
 	- /etc/buffyboard.conf.d/ (alphabetically)
 	- Override files (in supplied order)
