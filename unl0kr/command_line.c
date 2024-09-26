@@ -126,7 +126,7 @@ void ul_cli_parse_opts(int argc, char *argv[], ul_cli_opts *opts) {
             opts->verbose = true;
             break;
         case 'V':
-            fprintf(stderr, "unl0kr %s\n", UL_VERSION);
+            fprintf(stderr, "unl0kr %s\n", PROJECT_VERSION);
             exit(0);
         default:
             print_usage();

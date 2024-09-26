@@ -154,7 +154,7 @@ void bb_cli_parse_opts(int argc, char *argv[], bb_cli_opts *opts) {
             opts->verbose = true;
             break;
         case 'V':
-            fprintf(stderr, "buffyboard %s\n", BB_VERSION);
+            fprintf(stderr, "buffyboard %s\n", PROJECT_VERSION);
             exit(0);
         default:
             print_usage();

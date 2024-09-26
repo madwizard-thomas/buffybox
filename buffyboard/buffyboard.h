@@ -9,8 +9,8 @@
 
 #include "lvgl/lvgl.h"
 
-#ifndef BB_VERSION
-#define BB_VERSION "?" /* Just to silence IDE warning. Real version injected by meson during build. */
+#ifndef PROJECT_VERSION
+#define PROJECT_VERSION "?" /* Just to silence IDE warning. Real version injected by meson during build. */
 #endif
 
 #endif /* BB_BUFFYBOARD_H */

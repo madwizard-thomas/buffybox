@@ -377,7 +377,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Announce ourselves */
-    bbx_log(BBX_LOG_LEVEL_VERBOSE, "unl0kr %s", UL_VERSION);
+    bbx_log(BBX_LOG_LEVEL_VERBOSE, "unl0kr %s", PROJECT_VERSION);
 
     /* Parse config files */
     ul_config_init_opts(&conf_opts);

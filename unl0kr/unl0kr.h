@@ -9,8 +9,8 @@
 
 #include "lvgl/lvgl.h"
 
-#ifndef UL_VERSION
-#define UL_VERSION "?" /* Just to silence IDE warning. Real version injected by meson during build. */
+#ifndef PROJECT_VERSION
+#define PROJECT_VERSION "?" /* Just to silence IDE warning. Real version injected by meson during build. */
 #endif
 
 /**
