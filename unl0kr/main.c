@@ -591,7 +591,8 @@ int main(int argc, char *argv[]) {
     uint32_t timeout = conf_opts.general.timeout * 1000; /* ms */
     while(1) {
         if (!timeout || lv_disp_get_inactive_time(NULL) < timeout) {
-            lv_timer_periodic_handler();
+            uint32_t time_till_next = lv_timer_handler();
+            usleep(time_till_next * 1000);
         } else if (timeout) {
             shutdown();
         }

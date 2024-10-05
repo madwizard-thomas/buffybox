@@ -284,7 +284,8 @@ int main(int argc, char *argv[]) {
 
     /* Periodically run timer / task handler */
     while(1) {
-        lv_timer_periodic_handler();
+        uint32_t time_till_next = lv_timer_handler();
+        usleep(time_till_next * 1000);
     }
 
     return 0;
