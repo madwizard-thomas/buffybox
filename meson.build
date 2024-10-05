@@ -11,7 +11,7 @@ deplibinput  = dependency('libinput')
 deplibudev   = dependency('libudev')
 
 if get_option('man')
-    depscdoc = dependency('scdoc')
+    depscdoc = dependency('scdoc', native: true)
 endif
 
 common_include_dirs = include_directories('.')
