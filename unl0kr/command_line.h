@@ -7,6 +7,7 @@
 #ifndef UL_COMMAND_LINE_H
 #define UL_COMMAND_LINE_H
 
+#include "lvgl/lvgl.h"
 #include <stdbool.h>
 #include "lvgl/lvgl.h"
 

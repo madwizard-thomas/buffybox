@@ -35,6 +35,8 @@ typedef struct {
 typedef struct {
     /* If true and using the framebuffer backend, force a refresh on every draw operation */
     bool fbdev_force_refresh;
+    /* Force rotation orientation for display */
+    int rotation;
 } bb_config_opts_quirks;
 
 /**

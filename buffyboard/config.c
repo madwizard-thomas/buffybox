@@ -80,6 +80,7 @@ void bb_config_init_opts(bb_config_opts *opts) {
     opts->input.pointer = true;
     opts->input.touchscreen = true;
     opts->quirks.fbdev_force_refresh = false;
+    opts->quirks.rotation = 0; /* default to 0 (normal) */
 }
 
 void bb_config_parse_directory(const char *path, bb_config_opts *opts) {

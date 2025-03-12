@@ -234,6 +234,17 @@ int main(int argc, char *argv[]) {
         lv_display_set_dpi(disp, cli_opts.dpi);
     }
 
+    // FIXME: There's a bug here, the order should be: config file options are
+    // overridden by explicit cli options. In this case we always prefer the
+    // value from the config file, going against expectations and basically
+    // breaking the cli option in some cases.
+    // This is done because we don't actually know at this point if the cli
+    // option we have is just from being the default (i.e user didn't pass cli
+    // flag), or if they explicitly passed it via a flag.
+    if (conf_opts.quirks.rotation > 0) {
+        cli_opts.rotation = conf_opts.quirks.rotation;
+    }
+
     /* Set up display rotation */
     int32_t hor_res_phys = lv_display_get_horizontal_resolution(disp);
     int32_t ver_res_phys = lv_display_get_vertical_resolution(disp);
