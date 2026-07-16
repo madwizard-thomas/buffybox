@@ -8,7 +8,7 @@
 
 #include "../shared/config.h"
 #include "../shared/log.h"
-#include "../squeek2lvgl/sq2lv.h"
+#include "sq2lv_layouts.h"
 
 #include "lvgl/lvgl.h"
 
@@ -62,10 +62,11 @@ static int parsing_handler(void* user_data, const char* section, const char* key
                 return 1;
             }
         } else if (strcmp(key, "layout") == 0) {
-            sq2lv_layout_id_t id = sq2lv_find_layout_with_short_name(value);
-            if (id != SQ2LV_LAYOUT_NONE) {
-                opts->keyboard.layout_id = id;
-                return 1;
+            for (int i = 0; i < sq2lv_num_layouts; ++i) {
+                if (strcmp(sq2lv_layouts[i].short_name, value) == 0) {
+                    opts->keyboard.layout_id = i;
+                    return 1;
+                }
             }
         } else if (strcmp(key, "popovers") == 0) {
             if (bbx_config_parse_bool(value, &(opts->keyboard.popovers))) {

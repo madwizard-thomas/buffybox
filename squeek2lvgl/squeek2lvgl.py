@@ -712,7 +712,6 @@ if __name__ == '__main__':
 
     c_builder = SourceFileBuilder()
     c_builder.add_include(outfile_h)
-    c_builder.add_include('../squeek2lvgl/sq2lv.h')
     if args.generate_scancodes:
         c_builder.add_system_include('linux/input.h')
     c_builder.add_line()
@@ -725,6 +724,10 @@ if __name__ == '__main__':
     h_builder.add_include('lvgl/lvgl.h')
     h_builder.add_line()
     h_builder.add_include('stdint.h')
+    h_builder.add_line()
+    h_builder.add_line(f'#define SQ2LV_CTRL_NON_CHAR     (LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_CHECKED)')
+    h_builder.add_line(f'#define SQ2LV_CTRL_MOD_ACTIVE   (LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_CHECKABLE)')
+    h_builder.add_line(f'#define SQ2LV_CTRL_MOD_INACTIVE (LV_BUTTONMATRIX_CTRL_CLICK_TRIG | LV_BUTTONMATRIX_CTRL_CHECKABLE | LV_BUTTONMATRIX_CTRL_CHECKED)')
     h_builder.add_line()
     h_builder.add_line(f'#define SQ2LV_SCANCODES_ENABLED {1 if args.generate_scancodes else 0}')
     h_builder.add_line()

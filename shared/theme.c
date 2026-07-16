@@ -6,8 +6,9 @@
 
 #include "theme.h"
 
+#include "squeek2lvgl/sq2lv_keyboard.h"
 #include "log.h"
-#include "../squeek2lvgl/sq2lv.h"
+#include "sq2lv_layouts.h"
 
 /**
  * Static variables
@@ -237,7 +238,7 @@ static void apply_theme_cb(lv_theme_t *theme, lv_obj_t *obj) {
         return;
     }
 
-    if (lv_obj_check_type(obj, &lv_keyboard_class)) {
+    if (lv_obj_check_type(obj, &sq2lv_keyboard_class)) {
         lv_obj_add_style(obj, &(styles.keyboard), 0);
         lv_obj_add_style(obj, &(styles.key), LV_PART_ITEMS);
         return;
@@ -330,11 +331,11 @@ static void keyboard_draw_task_added_cb(lv_event_t *event) {
 
     bbx_theme_key *key = NULL;
 
-    if ((btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_MOD_INACTIVE) == SQ2LV_CTRL_MOD_INACTIVE) {
+    if (btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_MOD_INACTIVE) {
         key = &(current_theme.keyboard.keys.key_mod_inact);
-    } else if ((btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_MOD_ACTIVE) == SQ2LV_CTRL_MOD_ACTIVE) {
+    } else if (btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_MOD_ACTIVE) {
         key = &(current_theme.keyboard.keys.key_mod_act);
-    } else if ((btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_NON_CHAR) == SQ2LV_CTRL_NON_CHAR) {
+    } else if (btnm->ctrl_bits[dsc->id1] & SQ2LV_CTRL_NON_CHAR) {
         key = &(current_theme.keyboard.keys.key_non_char);
     } else {
         key = &(current_theme.keyboard.keys.key_char);

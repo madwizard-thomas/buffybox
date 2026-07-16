@@ -13,12 +13,11 @@
 #include "../shared/force_feedback.h"
 #include "../shared/header.h"
 #include "../shared/indev.h"
-#include "../shared/keyboard.h"
 #include "../shared/log.h"
 #include "../shared/terminal.h"
 #include "../shared/theme.h"
 #include "../shared/themes.h"
-#include "../squeek2lvgl/sq2lv.h"
+#include "../squeek2lvgl/sq2lv_keyboard.h"
 
 #include "lvgl/lvgl.h"
 
@@ -294,13 +293,12 @@ static void pad_anim_cb(void *obj, int32_t value) {
 }
 
 static void tablet_tool_button_cb() {
-    sq2lv_toggle_fourth_layer(keyboard);
+    sq2lv_keyboard_set_layer(keyboard, sq2lv_keyboard_get_layer(keyboard) == 3 ? 0 : 3);
 }
 
 static void layout_dropdown_value_changed_cb(lv_event_t *event) {
     lv_obj_t *dropdown = lv_event_get_target(event);
-    uint16_t idx = lv_dropdown_get_selected(dropdown);
-    sq2lv_switch_layout(keyboard, idx);
+    sq2lv_keyboard_set_layout(keyboard, lv_dropdown_get_selected(dropdown));
 }
 
 static void shutdown_btn_clicked_cb(lv_event_t *event) {
@@ -336,25 +334,13 @@ static void shutdown_mbox_declined_cb(lv_event_t *event) {
 }
 
 static void keyboard_value_changed_cb(lv_event_t *event) {
-    lv_obj_t *kb = lv_event_get_target(event);
-
-    uint16_t btn_id = lv_buttonmatrix_get_selected_button(kb);
-    if (btn_id == LV_BUTTONMATRIX_BUTTON_NONE) {
-        return;
-    }
-
+    LV_UNUSED(event);
     bbx_force_feedback_play();
-
-    if (sq2lv_is_layer_switcher(kb, btn_id)) {
-        sq2lv_switch_layer(kb, btn_id);
-        return;
-    }
-
-    lv_keyboard_def_event_cb(event);
 }
 
 static void keyboard_ready_cb(lv_event_t *event) {
-    print_password_and_exit(lv_keyboard_get_textarea(lv_event_get_target(event)));
+    LV_UNUSED(event);
+    print_password_and_exit(sq2lv_keyboard_get_textarea(keyboard));
 }
 
 static void textarea_ready_cb(lv_event_t *event) {
@@ -496,7 +482,6 @@ int main(int argc, char *argv[]) {
 
     bbx_header_widgets_t header_widgets;
     lv_obj_t *header = bbx_header_create(screen, &header_config, &header_widgets);
-    lv_obj_add_flag(header, BBX_WIDGET_HEADER);
 
     /* Add theme toggle to distinguish this widget type */
     lv_obj_add_flag(header, BBX_WIDGET_HEADER);
@@ -590,18 +575,16 @@ int main(int argc, char *argv[]) {
     lv_obj_set_style_pad_bottom(container, is_keyboard_hidden? content_pad_bottom_without_kb : content_pad_bottom_with_kb, LV_PART_MAIN);
 
     /* Keyboard (after textarea / label so that key popovers are not drawn over) */
-    bbx_keyboard_config_t keyboard_config;
-    bbx_keyboard_init_config(&keyboard_config);
-    keyboard_config.layout_id = (int)conf_opts.keyboard.layout_id;
-    keyboard_config.height = keyboard_height;
-    keyboard_config.popovers = conf_opts.keyboard.popovers;
-    keyboard_config.value_changed_callback = keyboard_value_changed_cb;
-    keyboard_config.ready_callback = keyboard_ready_cb;
-
-    keyboard = bbx_keyboard_create(screen, textarea, &keyboard_config);
+    keyboard = sq2lv_keyboard_create(screen);
+    lv_obj_set_size(keyboard, LV_PCT(100), keyboard_height);
+    lv_obj_add_event_cb(keyboard, keyboard_value_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(keyboard, keyboard_ready_cb, LV_EVENT_READY, NULL);
+    sq2lv_keyboard_set_textarea(keyboard, textarea);
+    sq2lv_keyboard_set_popovers(keyboard, conf_opts.keyboard.popovers);
+    bbx_theme_prepare_keyboard(keyboard);
 
     /* Apply keyboard options */
-    sq2lv_switch_layout(keyboard, conf_opts.keyboard.layout_id);
+    sq2lv_keyboard_set_layout(keyboard, conf_opts.keyboard.layout_id);
     lv_dropdown_set_selected(header_widgets.layout_dropdown, conf_opts.keyboard.layout_id);
 
     /* Periodically run timer / task handler */

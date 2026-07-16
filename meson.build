@@ -50,12 +50,11 @@ shared_sources_ul_f0 = files(
     'shared/backends.c',
     'shared/display.c',
     'shared/header.c',
-    'shared/keyboard.c',
     'shared/terminal.c'
 )
 
 squeek2lvgl_sources = files(
-    'squeek2lvgl/sq2lv.c'
+    'squeek2lvgl/sq2lv_keyboard.c'
 )
 
 lvgl_sources = files(
