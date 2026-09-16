@@ -27,7 +27,7 @@ Here are a few highlights of the currently supported features:
 - Toggling on-screen keyboard with slide in/out animation
 - Theming support including switching between light and dark theme at runtime
 - Disclosing and hiding entered password at runtime
-- Shutting down the device via a soft button
+- Shutting down the device via a soft or hard button
 
 Screenshots of the currently available themes may be found in the [screenshots] folder.
 
@@ -96,18 +96,12 @@ sudo valgrind --leak-check=yes ../_build/unl0kr/unl0kr
 
 ## Backends
 
-Unl0kr supports multiple LVGL display drivers, referred to as "backends".
+Unl0kr supports multiple LVGL display drivers, selected at compile time by the "lvgl_backends" option.
 
 - fbdev
-- drm (optional)
+- drm
 
-The active backend can be selected via the `general.backend` option in the configuration file.
-
-Note that if [libdrm] is installed, the DRM backend will be compiled in automatically. It's possible to prevent this behaviour by passing the `with-drm` option to meson.
-
-```
-$ meson _build -Dwith-drm=disabled
-```
+At runtime the active backend can be selected via the `general.backend` option in the configuration file.
 
 ## Keyboard layouts
 

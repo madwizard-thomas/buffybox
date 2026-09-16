@@ -80,7 +80,8 @@ Create a package for Unl0kr only:
 ```
 meson setup builddir/
 meson compile -C builddir/ unl0kr/unl0kr
-meson compile -C builddir/ unl0kr/unl0kr-agent # on systemd-based distributions
+meson compile -C builddir/ unl0kr/unl0kr-agent # if configured with -Dsystemd=true
+meson compile -C builddir/ man/unl0kr.{1,conf.5} # if configured with -Dman=true
 meson install -C builddir/ --tags=unl0kr --destdir "$pkgdir"
 ```
 
@@ -88,6 +89,7 @@ Create a package for Buffyboard only:
 ```
 meson setup builddir/
 meson compile -C builddir/ buffyboard/buffyboard
+meson compile -C builddir/ man/buffyboard.{1,conf.5} # if configured with -Dman=true
 meson install -C builddir/ --tags=buffyboard --destdir "$pkgdir"
 ```
 
