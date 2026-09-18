@@ -8,10 +8,13 @@
 
 #include "../shared/log.h"
 
+#include <linux/kd.h>
 #include <linux/uinput.h>
+#include <linux/vt.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -49,9 +52,39 @@ static bool emit_key(int code, int value);
  * Static functions
  */
 
+static bool is_in_graphics_mode() {
+    int fd_tty_zero = open("/dev/tty0", O_RDWR);
+    struct vt_stat vs;
+    if (0 > ioctl(fd_tty_zero, VT_GETSTATE, &vs)) {
+        //fprintf(stderr, "%s\n", explain_ioctl(fd_tty_zero, VT_GETSTATE, &vs));
+        exit(EXIT_FAILURE);
+    }
+    close(fd_tty_zero);
+
+    char * active_vt = NULL;
+    if (0 > asprintf(&active_vt, "/dev/tty%i", vs.v_active)) {
+        exit(EXIT_FAILURE);
+    }
+
+    int fd_tty_active = open(active_vt, O_RDWR);
+    int kd_mode = -1;
+    if (0 > ioctl(fd_tty_active, KDGETMODE, &kd_mode)) {
+        //fprintf(stderr, "%s\n", explain_ioctl(fd_tty_zero, VT_GETSTATE, &vs));
+        exit(EXIT_FAILURE);
+    }
+    close(fd_tty_active);
+
+    return kd_mode == KD_GRAPHICS;
+}
+
 static bool emit_key(int code, int value) {
     events[0].code = code;
     events[0].value = value;
+
+    if (is_in_graphics_mode()) {
+        bbx_log(BBX_LOG_LEVEL_WARNING, "Not emitting events in graphics mode");
+        return false;
+    }
 
     if (write(fd, events, sizeof(events)) != sizeof(events)) {
         bbx_log(BBX_LOG_LEVEL_WARNING, "Could not emit events");
