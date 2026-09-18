@@ -40,7 +40,7 @@ static struct input_event events[2] = {
  * Emit a key event on the device.
  * @param code event code
  * @param value event value
- * @return true if emitting the event was succesful, false otherwise
+ * @return true if emitting the event was successful, false otherwise
  */
 static bool emit_key(int code, int value);
 
