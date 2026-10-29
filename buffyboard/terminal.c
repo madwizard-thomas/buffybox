@@ -42,17 +42,16 @@ void bb_terminal_shrink_current() {
     if (fd < 0)
         return;
 
+    /* KDFONTOP returns EINVAL if we are not in the text mode,
+        so we can skip this check */
+/*
     int mode;
     if (ioctl(fd, KDGETMODE, &mode) != 0)
         goto end;
 
-    if (mode == KD_TEXT) {
-        bbx_indev_resume();
-    } else {
-        bbx_indev_suspend();
+    if (mode != KD_TEXT)
         goto end;
-    }
-
+*/
     struct console_font_op cfo = {
         .op = KD_FONT_OP_GET,
         .width = UINT_MAX,
@@ -77,12 +76,12 @@ void bb_terminal_reset_all() {
         return;
 
     struct vt_stat state;
-    if (ioctl(fd, VT_GETSTATE, &state) != 0) {
-        close(fd);
-        return;
-    }
+    int r = ioctl(fd, VT_GETSTATE, &state);
 
     close(fd);
+
+    if (r != 0)
+        return;
 
     char buffer[sizeof("/dev/tty") + 2];
     unsigned short mask = state.v_state >> 1;
@@ -140,4 +139,22 @@ bool bb_terminal_is_busy(unsigned int tty) {
         return false;
 
     return (state.v_state >> tty) & 0x01;
+}
+
+void bb_terminal_on_mode_changed() {
+    int fd = open("/dev/tty0", O_RDONLY|O_NOCTTY);
+    if (fd < 0)
+        return;
+
+    int mode;
+    if (ioctl(fd, KDGETMODE, &mode) != 0)
+        goto end;
+
+    if (mode == KD_TEXT)
+        bbx_indev_resume();
+    else
+        bbx_indev_suspend();
+
+end:
+    close(fd);
 }

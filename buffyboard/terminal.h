@@ -30,8 +30,13 @@ void bb_terminal_shrink_current();
 void bb_terminal_reset_all();
 
 /**
- * Check whether the terminal is opened by some process
+ * Check whether the terminal is opened by some process.
  */
 bool bb_terminal_is_busy(unsigned int tty);
+
+/**
+ * Suspend/resume input processing in KD_GRAPHICS/KD_TEXT modes.
+ */
+void bb_terminal_on_mode_changed();
 
 #endif /* BB_TERMINAL_H */

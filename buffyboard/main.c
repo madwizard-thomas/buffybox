@@ -6,6 +6,7 @@
 #include "buffyboard.h"
 #include "command_line.h"
 #include "config.h"
+#include "ebpf.h"
 #include "sq2lv_layouts.h"
 #include "terminal.h"
 #include "uinput_device.h"
@@ -25,6 +26,8 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 
@@ -37,7 +40,6 @@ bb_config_opts conf_opts;
 
 static int fd_active;
 static lv_obj_t *keyboard = NULL;
-static sig_atomic_t redraw_requested = false;
 
 /**
  * Static prototypes
@@ -76,6 +78,11 @@ static void emit_key_events(uint16_t btn_id, bool key_down, bool key_up);
  */
 static void pop_checked_modifier_keys(void);
 
+/**
+ * Shrink the currrent terminal and draw the keyboard.
+ */
+static void update_terminal();
+
 
 /**
  * Static functions
@@ -86,13 +93,17 @@ static void tablet_tool_button_cb() {
 }
 
 static void signal_handler(int signum) {
-    if (signum == SIGUSR1) {
-        redraw_requested = true;
+    switch (signum) {
+    case SIGUSR1:
+        update_terminal();
         return;
+    case SIGALRM:
+        bb_terminal_on_mode_changed();
+        return;
+    default:
+        bb_terminal_reset_all();
+        exit(0);
     }
-
-    bb_terminal_reset_all();
-    exit(0);
 }
 
 static void keyboard_value_changed_cb(lv_event_t *event) {
@@ -164,8 +175,15 @@ static void pop_checked_modifier_keys(void) {
     }
 }
 
+static void update_terminal() {
+    bb_terminal_shrink_current();
+    lv_obj_invalidate(keyboard);
+}
+
 static void on_new_terminal() {
-    if (!redraw_requested && conf_opts.quirks.ignore_unused_terminals) {
+    pop_checked_modifier_keys();
+
+    if (conf_opts.quirks.ignore_unused_terminals) {
         lseek(fd_active, 0, SEEK_SET);
 
         char buffer[8];
@@ -188,10 +206,7 @@ static void on_new_terminal() {
         }
     }
 
-    redraw_requested = false;
-    pop_checked_modifier_keys();
-    bb_terminal_shrink_current();
-    lv_obj_invalidate(keyboard);
+    update_terminal();
 }
 
 /**
@@ -326,6 +341,32 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    sigset_t sigmask;
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGUSR1);
+    sigaddset(&sigmask, SIGALRM);
+    sigprocmask(SIG_BLOCK, &sigmask, NULL);
+
+    /* Set up kernel hooks to track the terminal mode */
+    if (bb_ebpf_init(fd_epoll) == 0) {
+        // Fallback to polling with a timer
+        timer_t id_timer;
+        if (timer_create(CLOCK_MONOTONIC, NULL, &id_timer) != -1) {
+            struct itimerspec spec = {
+                .it_value.tv_sec = 1,
+                .it_value.tv_nsec = 0,
+                .it_interval.tv_sec = 1,
+                .it_interval.tv_nsec = 0
+            };
+            if (timer_settime(id_timer, 0, &spec, NULL) == -1)
+                bbx_log(BBX_LOG_LEVEL_WARNING, "timer_settime() is failed: %s", strerror(errno));
+        } else
+            bbx_log(BBX_LOG_LEVEL_WARNING, "timer_create() is failed: %s", strerror(errno));
+    }
+
+    /* Suspend libinput if the terminal is in KD_GRAPHICS mode */
+    bb_terminal_on_mode_changed();
+
     /* Set signal handlers */
     struct sigaction action;
     action.sa_handler = signal_handler;
@@ -336,17 +377,16 @@ int main(int argc, char *argv[]) {
 
     action.sa_flags = SA_RESTART;
     sigemptyset(&action.sa_mask);
+    sigaddset(&action.sa_mask, SIGALRM);
     sigaction(SIGUSR1, &action, NULL);
 
-    sigset_t sigmask;
-    sigemptyset(&sigmask);
-    sigaddset(&sigmask, SIGUSR1);
-
-    sigprocmask(SIG_BLOCK, &sigmask, NULL);
+    sigemptyset(&action.sa_mask);
+    sigaddset(&action.sa_mask, SIGUSR1);
+    sigaction(SIGALRM, &action, NULL);
 
     sigemptyset(&sigmask);
 
-    /* Periodically run timer / task handler */
+    /* Event loop */
     while(1) {
         uint32_t time_till_next = lv_timer_handler();
 
@@ -358,11 +398,8 @@ int main(int argc, char *argv[]) {
             handler();
             continue;
         }
-        if (errno == EINTR) {
-            if (redraw_requested)
-                on_new_terminal();
+        if (errno == EINTR)
             continue;
-        }
 
         bbx_log(BBX_LOG_LEVEL_ERROR, "epoll_pwait() is failed");
         bb_terminal_reset_all();

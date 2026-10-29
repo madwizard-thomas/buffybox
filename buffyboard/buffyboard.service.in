@@ -1,5 +1,5 @@
 [Unit]
-Documentation=https://gitlab.postmarketos.org/postmarketOS/buffybox
+Documentation=https://gitlab.nura.eco/nura/buffybox
 After=getty.target
 
 [Service]
@@ -16,12 +16,11 @@ DeviceAllow=char-tty rw
 RestrictAddressFamilies=AF_NETLINK
 
 # Hardening
-CapabilityBoundingSet=
+CapabilityBoundingSet=CAP_SYS_ADMIN
 NoNewPrivileges=true
 RestrictSUIDSGID=true
 PrivateMounts=true
 PrivateTmp=true
-PrivateUsers=true
 ProtectClock=true
 ProtectControlGroups=true
 ProtectHome=true
@@ -37,6 +36,7 @@ SystemCallArchitectures=native
 SystemCallFilter=@system-service
 SystemCallFilter=~@privileged
 SystemCallFilter=~@resources
+SystemCallFilter=bpf
 
 [Install]
 WantedBy=multi-user.target
