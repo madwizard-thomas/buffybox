@@ -10,13 +10,13 @@ If a change only affects particular applications, they are listed in parentheses
 
 ## Unreleased
 
-Nothing at the moment.
+- fix(buffyboard): Suspend input processing when a terminal switches to KD_GRAPHICS mode (!95, thanks @vstoiakin)
 
 ## 3.6.0 (2026-09-06)
 
 - fix(buffyboard): Remove initialization of .time.* in static input_event to fix build error on 32-bit platforms (!87, thanks @craftyguy)
-- misc: synchronize default values of options in binaries and configuration files (!88, thanks @vstoiakin)
-- feat: add support for styluses on tablets (!89, thanks @vstoiakin)
+- misc: Synchronize default values of options in binaries and configuration files (!88, thanks @vstoiakin)
+- feat: Add support for styluses on tablets (!89, thanks @vstoiakin)
 
 ## 3.5.1 (2026-03-03)
 
@@ -71,7 +71,7 @@ Nothing at the moment.
 - feat(buffyboard): Add a buffyboard.service systemd service (!34, @uninsane)
 - fix(unl0kr): Select an available DRM device instead of a hard-coded one (!35, thanks @Sorcus)
 - feat(unl0kr): Enable software rotation (!32, thanks @xs5871 & @craftyguy)
-- misc: do not hardcode endianess of a system (!41, thanks @vstoiakin)
+- misc: Do not hardcode endianess of a system (!41, thanks @vstoiakin)
 - misc(unl0kr): Optimize the main loop (!38, thanks @vstoiakin)
 - feat(unl0kr): Add the option to show a custom message to a user (!39, thanks @vstoiakin)
 - misc: Update LVGL to 9.2.2 (!46, thanks @vstoiakin)

@@ -4,6 +4,7 @@
 buffyboard_sources = files(
     'command_line.c',
     'config.c',
+    'ebpf.c',
     'main.c',
     'sq2lv_layouts.c',
     'terminal.c',
